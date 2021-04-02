@@ -29,12 +29,6 @@ namespace SpaceArcade.Sprites
 
         public BoundingCircle Bounds => bounds;
 
-        public SpaceShip(Game game)
-        {
-            this.game = game;
-            this.direction = -Vector2.UnitY;
-        }
-
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("sheet");
