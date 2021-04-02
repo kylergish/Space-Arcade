@@ -21,7 +21,6 @@
     <MonoGameContentReference Include="Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="StateManagement\" />
     <Folder Include="Screens\" />
   </ItemGroup>
 </Project>
