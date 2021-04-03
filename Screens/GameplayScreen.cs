@@ -30,6 +30,7 @@ namespace SpaceArcade.Screens
         float pauseAlpha;
         readonly InputAction pauseAction;
 
+
         public GameplayScreen()
         {
             TransitionOnTime = TimeSpan.FromSeconds(1.5);
@@ -38,6 +39,11 @@ namespace SpaceArcade.Screens
             pauseAction = new InputAction(new[] { Buttons.Start, Buttons.Back }, new[] { Keys.Back, Keys.Escape }, true);
 
             spaceShip = new SpaceShip();
+        }
+
+        public override void Activate()
+        {
+            if (content == null) content = new ContentManager(ScreenManager.Game.Services, "Content");
 
             asteroids = new Asteroid[]
             {
@@ -59,11 +65,6 @@ namespace SpaceArcade.Screens
             };
 
             coinsLeft = coins.Length;
-        }
-
-        public override void Activate()
-        {
-            if (content == null) content = new ContentManager(ScreenManager.Game.Services, "Content");
 
             spaceShip.LoadContent(content);
             foreach (var asteroid in asteroids) asteroid.LoadContent(content);
@@ -96,7 +97,7 @@ namespace SpaceArcade.Screens
 
             if(IsActive)
             {
-                spaceShip.Update(gameTime);
+                spaceShip.Update(gameTime, ScreenManager.GraphicsDevice.Viewport.Width, ScreenManager.GraphicsDevice.Viewport.Height);
 
                 foreach(var asteroid in asteroids)
                 {

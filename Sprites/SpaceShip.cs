@@ -6,21 +6,23 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using SpaceArcade.Collisions;
+using SpaceArcade.StateManagement;
 
 namespace SpaceArcade.Sprites
 {
     public class SpaceShip
     {
-        Game game;
-
         GamePadState gamePadState;
         KeyboardState keyboardState;
 
         Texture2D texture;
+        Texture2D flame;
         Vector2 position = new Vector2(250, 250);
         Vector2 velocity;
         Vector2 direction;
         BoundingCircle bounds = new BoundingCircle(new Vector2(50, 50), 30);
+
+        bool rocketOn = false;
 
         const float ANGULAR_ACCELERATION = 5;
         const float LINEAR_ACCELERATION = 10;
@@ -32,9 +34,10 @@ namespace SpaceArcade.Sprites
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("sheet");
+            flame = content.Load<Texture2D>("Flame");
         }
 
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, int screenWidth, int screenHeight)
         {
             gamePadState = GamePad.GetState(0);
             keyboardState = Keyboard.GetState();
@@ -56,6 +59,10 @@ namespace SpaceArcade.Sprites
                 acceleration += direction * LINEAR_ACCELERATION;
                 angularAcceleration -= ANGULAR_ACCELERATION;
             }
+            if(keyboardState.IsKeyDown(Keys.Space) || keyboardState.IsKeyDown(Keys.Up))
+            {
+                rocketOn = true;
+            }
 
             angularVelocity += angularAcceleration * t;
             angle += angularVelocity * t;
@@ -66,11 +73,10 @@ namespace SpaceArcade.Sprites
             velocity += acceleration * t;
             position += velocity * t;
 
-            var viewport = game.GraphicsDevice.Viewport;
-            if (position.Y < 0) position.Y = viewport.Height;
-            if (position.Y > viewport.Height) position.Y = 0;
-            if (position.X < 0) position.X = viewport.Width;
-            if (position.X > viewport.Width) position.X = 0;
+            if (position.Y < 0) position.Y = screenHeight;
+            if (position.Y > screenHeight) position.Y = 0;
+            if (position.X < 0) position.X = screenWidth;
+            if (position.X > screenWidth) position.X = 0;
 
             bounds.Center = position;
         }
@@ -78,6 +84,7 @@ namespace SpaceArcade.Sprites
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, position, new Rectangle(326, 0, 96, 74), Color.White, angle, new Vector2(47, 41), 1.0f, SpriteEffects.None, 0);
+            if(rocketOn) spriteBatch.Draw(flame, position, new Rectangle(0, 0, 1024, 1024), Color.White, angle, new Vector2(240, 240), 0.1f, SpriteEffects.FlipVertically, 0);
         }
     }
 }

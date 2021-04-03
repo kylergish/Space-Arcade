@@ -4,13 +4,17 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using SpaceArcade.StateManagement;
+
 namespace SpaceArcade.Screens
 {
     public class BackgroundScreen : GameScreen
     {
         ContentManager content;
         Texture2D backgroundTexture;
+
+        Song backgroundSong;
 
         public BackgroundScreen()
         {
@@ -23,6 +27,9 @@ namespace SpaceArcade.Screens
             if (content == null) content = new ContentManager(ScreenManager.Game.Services, "Content");
 
             backgroundTexture = content.Load<Texture2D>("Space Background");
+            backgroundSong = content.Load<Song>("Lobo Loco - Walking trough the Light (ID 1449)");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(backgroundSong);
         }
 
         public override void Unload()

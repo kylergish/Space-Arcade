@@ -42,7 +42,7 @@ namespace SpaceArcade.Screens
 
         private void SetMenuEntryText()
         {
-            sfxVolumeMenuEntry.Text = $"SFX Volume: {sfxVolumeMenuEntry}";
+            sfxVolumeMenuEntry.Text = $"SFX Volume: {sfxVolumeOption}";
             musicVolumeMenuEntry.Text = $"Music Volume: {musicVolumeOption}";
         }
 

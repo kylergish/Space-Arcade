@@ -30,6 +30,7 @@ namespace SpaceArcade.StateManagement
 
         public override void Initialize()
         {
+            base.Initialize();
             isInitialized = true;
         }
 
@@ -65,7 +66,7 @@ namespace SpaceArcade.StateManagement
 
             while(tmpScreensList.Count > 0)
             {
-                var screen = tmpScreensList[tmpScreensList.Count - 1];
+                var screen = tmpScreensList[^1];
                 tmpScreensList.RemoveAt(tmpScreensList.Count - 1);
 
                 screen.Update(gameTime, otherScreenHasFocus, coveredByOtherScreen);
@@ -124,10 +125,7 @@ namespace SpaceArcade.StateManagement
             SpriteBatch.End();
         }
 
-        public void Deactivate()
-        {
-
-        }
+        public void Deactivate() { }
 
         public bool Activate()
         {
