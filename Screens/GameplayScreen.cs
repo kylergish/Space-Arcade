@@ -23,6 +23,8 @@ namespace SpaceArcade.Screens
         SpriteFont bangers;
         SoundEffect coinPickup;
 
+        bool collisionOn = false;
+
         int coinsLeft;
 
         readonly Random random = new Random();
@@ -47,8 +49,6 @@ namespace SpaceArcade.Screens
 
             asteroids = new Asteroid[]
             {
-                new Asteroid(new Vector2((float)random.NextDouble() * ScreenManager.GraphicsDevice.Viewport.Width, (float)random.NextDouble() * ScreenManager.GraphicsDevice.Viewport.Height), new Vector2((float)random.NextDouble(), (float)random.NextDouble()), ScreenManager.GraphicsDevice),
-                new Asteroid(new Vector2((float)random.NextDouble() * ScreenManager.GraphicsDevice.Viewport.Width, (float)random.NextDouble() * ScreenManager.GraphicsDevice.Viewport.Height), new Vector2((float)random.NextDouble(), (float)random.NextDouble()), ScreenManager.GraphicsDevice),
                 new Asteroid(new Vector2((float)random.NextDouble() * ScreenManager.GraphicsDevice.Viewport.Width, (float)random.NextDouble() * ScreenManager.GraphicsDevice.Viewport.Height), new Vector2((float)random.NextDouble(), (float)random.NextDouble()), ScreenManager.GraphicsDevice),
                 new Asteroid(new Vector2((float)random.NextDouble() * ScreenManager.GraphicsDevice.Viewport.Width, (float)random.NextDouble() * ScreenManager.GraphicsDevice.Viewport.Height), new Vector2((float)random.NextDouble(), (float)random.NextDouble()), ScreenManager.GraphicsDevice),
                 new Asteroid(new Vector2((float)random.NextDouble() * ScreenManager.GraphicsDevice.Viewport.Width, (float)random.NextDouble() * ScreenManager.GraphicsDevice.Viewport.Height), new Vector2((float)random.NextDouble(), (float)random.NextDouble()), ScreenManager.GraphicsDevice),
@@ -95,6 +95,11 @@ namespace SpaceArcade.Screens
             if (coveredByOtherScreen) pauseAlpha = Math.Min(pauseAlpha + 1f / 32, 1);
             else pauseAlpha = Math.Max(pauseAlpha - 1f / 32, 0);
 
+            if(gameTime.TotalGameTime.TotalSeconds > 5 && !collisionOn)
+            {
+                collisionOn = true;
+            }
+
             if(IsActive)
             {
                 spaceShip.Update(gameTime, ScreenManager.GraphicsDevice.Viewport.Width, ScreenManager.GraphicsDevice.Viewport.Height);
@@ -102,7 +107,13 @@ namespace SpaceArcade.Screens
                 foreach(var asteroid in asteroids)
                 {
                     asteroid.Update(gameTime);
-                    if (asteroid.Bounds.CollidesWith(spaceShip.Bounds)) ScreenManager.RemoveScreen(this);
+                    
+                    if (asteroid.Bounds.CollidesWith(spaceShip.Bounds) && collisionOn)
+                    {
+                        ScreenManager.RemoveScreen(this);
+                        ScreenManager.AddScreen(new BackgroundScreen(), null);
+                        ScreenManager.AddScreen(new LoseScreen(), null);
+                    }
                 }
 
                 foreach(var coin in coins)
@@ -114,23 +125,24 @@ namespace SpaceArcade.Screens
                         coinPickup.Play();
                     }
                 }
-                if (coinsLeft < 1) ScreenManager.RemoveScreen(this);
+                if (coinsLeft < 1)
+                {
+                    ScreenManager.RemoveScreen(this);
+                    ScreenManager.AddScreen(new BackgroundScreen(), null);
+                    ScreenManager.AddScreen(new WinScreen(), null);
+                }
             }
         }
 
         public override void HandleInput(GameTime gameTime, InputState input)
         {
-            if (input == null) throw new ArgumentNullException(nameof(input));
-
-            int playerIndex = (int)ControllingPlayer.Value;
-
-            var keyboardState = input.CurrentKeyboardStates[playerIndex];
-            var gamePadState = input.CurrentGamePadStates[playerIndex];
-
-            bool gamePadDisconnected = !gamePadState.IsConnected && input.GamePadWasConnected[playerIndex];
+            base.HandleInput(gameTime, input);
 
             PlayerIndex player;
-            if (pauseAction.Occurred(input, ControllingPlayer, out player) || gamePadDisconnected) ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
+            if(pauseAction.Occurred(input, ControllingPlayer, out player))
+            {
+                ScreenManager.AddScreen(new PauseMenuScreen(), ControllingPlayer);
+            }
         }
 
         public override void Draw(GameTime gameTime)
@@ -144,8 +156,7 @@ namespace SpaceArcade.Screens
             spaceShip.Draw(gameTime, spriteBatch);
 
             spriteBatch.DrawString(bangers, "Avoid the Asteroids!!!", new Vector2(0, 0), Color.White);
-            spriteBatch.DrawString(bangers, $"{gameTime.TotalGameTime:c}", new Vector2(0, 50), Color.White);
-            spriteBatch.DrawString(bangers, $"Coins Left: {coinsLeft}", new Vector2(0, 100), Color.White);
+            spriteBatch.DrawString(bangers, $"Coins Left: {coinsLeft}", new Vector2(0, 50), Color.White);
             spriteBatch.End();
 
             if (TransitionPosition > 0 || pauseAlpha > 0)

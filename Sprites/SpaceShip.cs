@@ -25,7 +25,7 @@ namespace SpaceArcade.Sprites
         bool rocketOn = false;
 
         const float ANGULAR_ACCELERATION = 5;
-        const float LINEAR_ACCELERATION = 10;
+        const float LINEAR_ACCELERATION = 30;
         float angle;
         float angularVelocity;
 
@@ -51,17 +51,25 @@ namespace SpaceArcade.Sprites
 
             if(keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.A))
             {
-                acceleration += direction * LINEAR_ACCELERATION;
-                angularAcceleration += ANGULAR_ACCELERATION;
+                //acceleration += direction * LINEAR_ACCELERATION;
+                angularAcceleration -= ANGULAR_ACCELERATION;
             }
             if(keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
             {
-                acceleration += direction * LINEAR_ACCELERATION;
-                angularAcceleration -= ANGULAR_ACCELERATION;
+                //acceleration += direction * LINEAR_ACCELERATION;
+                angularAcceleration += ANGULAR_ACCELERATION;
             }
-            if(keyboardState.IsKeyDown(Keys.Space) || keyboardState.IsKeyDown(Keys.Up))
+           
+
+            if (acceleration.X != 0.0 || acceleration.Y != 0.0) acceleration -= direction * LINEAR_ACCELERATION;
+            else
             {
-                rocketOn = true;
+                if (keyboardState.IsKeyDown(Keys.Space) || keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.W))
+                {
+                    rocketOn = true;
+                    acceleration += direction * LINEAR_ACCELERATION;
+                }
+                else rocketOn = false;
             }
 
             angularVelocity += angularAcceleration * t;
@@ -83,8 +91,8 @@ namespace SpaceArcade.Sprites
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            if (rocketOn) spriteBatch.Draw(flame, position, new Rectangle(0, 0, 1024, 1024), Color.White, angle, new Vector2(500, -200), 0.1f, SpriteEffects.FlipVertically, 0);
             spriteBatch.Draw(texture, position, new Rectangle(326, 0, 96, 74), Color.White, angle, new Vector2(47, 41), 1.0f, SpriteEffects.None, 0);
-            if(rocketOn) spriteBatch.Draw(flame, position, new Rectangle(0, 0, 1024, 1024), Color.White, angle, new Vector2(240, 240), 0.1f, SpriteEffects.FlipVertically, 0);
         }
     }
 }
