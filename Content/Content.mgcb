@@ -91,6 +91,18 @@
 /processorParam:Quality=Best
 /build:Lobo Loco - Walking trough the Light (ID 1449).mp3
 
+#begin particle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:particle.png
+
 #begin Pickup_Coin15.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor

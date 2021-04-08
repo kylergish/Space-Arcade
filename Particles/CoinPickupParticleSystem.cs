@@ -6,16 +6,16 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SpaceArcade.Particles
 {
-    public class ExplosionParticleSystem : ParticleSystem
+    public class CoinPickupParticleSystem : ParticleSystem
     {
-        public ExplosionParticleSystem(Game game, int maxExplosions) : base(game, maxExplosions * 25) { }
+        public CoinPickupParticleSystem(Game game, int maxParticles) : base(game, maxParticles * 25) { }
 
         protected override void InitializeConstants()
         {
-            textureFilename = "explosion";
+            textureFilename = "particle";
 
-            minNumParticles = 200;
-            maxNumParticles = 250;
+            minNumParticles = 20;
+            maxNumParticles = 25;
 
             blendState = BlendState.Additive;
             DrawOrder = AdditiveBlendDrawOrder;
@@ -23,7 +23,7 @@ namespace SpaceArcade.Particles
 
         protected override void InitializeParticle(ref Particle p, Vector2 where)
         {
-            var velocity = RandomHelper.NextDirection() * RandomHelper.NextFloat(40, 200);
+            var velocity = RandomHelper.NextDirection() * RandomHelper.NextFloat(40, 500);
 
             var lifetime = RandomHelper.NextFloat(0.5f, 1.0f);
 
@@ -31,9 +31,11 @@ namespace SpaceArcade.Particles
 
             var rotation = RandomHelper.NextFloat(0, MathHelper.TwoPi);
 
-            var angularVeloctiy = RandomHelper.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4);
+            var angularVelocity = RandomHelper.NextFloat(-MathHelper.PiOver4, MathHelper.PiOver4);
 
-            p.Initialize(where, velocity, acceleration, lifetime: lifetime, rotation: rotation, angularVelocity: angularVeloctiy);
+            var scale = RandomHelper.NextFloat(1, 2);
+
+            p.Initialize(where, velocity, acceleration, Color.Gold, lifetime: lifetime, rotation: rotation, angularVelocity: angularVelocity, scale: scale);
         }
 
         protected override void UpdateParticle(ref Particle particle, float dt)
@@ -42,12 +44,9 @@ namespace SpaceArcade.Particles
 
             float normalizedLifetime = particle.TimeSinceStart / particle.Lifetime;
 
-            float alpha = 4 * normalizedLifetime * (1 - normalizedLifetime);
-            particle.Color = Color.White * alpha;
-
-            particle.Scale = 0.1f + 0.25f * normalizedLifetime;
+            particle.Scale = 0.75f + 0.25f * normalizedLifetime;
         }
 
-        public void PlaceExplosion(Vector2 where) => AddParticles(where);
+        public void PlaceParticle(Vector2 where) => AddParticles(where);
     }
 }

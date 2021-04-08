@@ -15,6 +15,7 @@ namespace SpaceArcade.Screens
 {
     public class GameplayScreen : GameScreen
     {
+        Game game;
         ContentManager content;
 
         SpaceShip spaceShip;
@@ -33,7 +34,9 @@ namespace SpaceArcade.Screens
         float pauseAlpha;
         readonly InputAction pauseAction;
 
+        ShootingStarParticleSystem shootingStar;
         ExplosionParticleSystem explosion;
+        CoinPickupParticleSystem pickup;
 
         Texture2D starBackground;
 
@@ -82,7 +85,14 @@ namespace SpaceArcade.Screens
             coinPickup = content.Load<SoundEffect>("Pickup_Coin15");
             starBackground = content.Load<Texture2D>("star-background");
 
-            //explosion = new ExplosionParticleSystem( , 20);
+            shootingStar = new ShootingStarParticleSystem(ScreenManager.Game, new Rectangle(0, -20, 800, 10));
+            ScreenManager.Game.Components.Add(shootingStar);
+
+            explosion = new ExplosionParticleSystem(ScreenManager.Game, 20);
+            ScreenManager.Game.Components.Add(explosion);
+
+            pickup = new CoinPickupParticleSystem(ScreenManager.Game, 20);
+            ScreenManager.Game.Components.Add(pickup);
 
             Thread.Sleep(1000);
 
@@ -123,8 +133,9 @@ namespace SpaceArcade.Screens
                     
                     if (asteroid.Bounds.CollidesWith(spaceShip.Bounds) && collisionOn)
                     {
-                        //explosion.PlaceExplosion(spaceShip.Position);
+                        explosion.PlaceExplosion(spaceShip.Position);
                         ScreenManager.RemoveScreen(this);
+                        ScreenManager.Game.Components.Remove(shootingStar);
                         ScreenManager.AddScreen(new BackgroundScreen(), null);
                         ScreenManager.AddScreen(new LoseScreen(), null);
                     }
@@ -134,6 +145,7 @@ namespace SpaceArcade.Screens
                 {
                     if(!coin.Collected && coin.Bounds.CollidesWith(spaceShip.Bounds))
                     {
+                        pickup.PlaceParticle(coin.Bounds.Center);
                         coin.Collected = true;
                         coinsLeft--;
                         coinPickup.Play();
@@ -142,6 +154,7 @@ namespace SpaceArcade.Screens
                 if (coinsLeft < 1)
                 {
                     ScreenManager.RemoveScreen(this);
+                    ScreenManager.Game.Components.Remove(shootingStar);
                     ScreenManager.AddScreen(new BackgroundScreen(), null);
                     ScreenManager.AddScreen(new WinScreen(), null);
                 }
