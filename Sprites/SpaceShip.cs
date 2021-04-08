@@ -18,6 +18,7 @@ namespace SpaceArcade.Sprites
         Texture2D texture;
         Texture2D flame;
         Vector2 position = new Vector2(250, 250);
+        public Vector2 Position => position;
         Vector2 velocity;
         Vector2 direction;
         BoundingCircle bounds = new BoundingCircle(new Vector2(50, 50), 30);

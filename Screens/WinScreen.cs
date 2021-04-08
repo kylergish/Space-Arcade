@@ -42,7 +42,7 @@ namespace SpaceArcade.Screens
             var font = ScreenManager.Font;
             var spriteBatch = ScreenManager.SpriteBatch;
             spriteBatch.Begin();
-            spriteBatch.DrawString(font, "CONGRATULATIONS YOU WIN!", new Vector2(250, 100), Color.White);
+            spriteBatch.DrawString(font, "CONGRATULATIONS YOU WIN!", new Vector2(200, 100), Color.White);
             spriteBatch.DrawString(font, "Press ENTER to play again.", new Vector2(175, 270), Color.White);
             spriteBatch.DrawString(font, "Press ESCAPE to return to menu", new Vector2(150, 320), Color.White);
             spriteBatch.End();

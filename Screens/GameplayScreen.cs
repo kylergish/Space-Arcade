@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 using SpaceArcade.Sprites;
 using SpaceArcade.StateManagement;
+using SpaceArcade.Particles;
 
 namespace SpaceArcade.Screens
 {
@@ -32,6 +33,11 @@ namespace SpaceArcade.Screens
         float pauseAlpha;
         readonly InputAction pauseAction;
 
+        ExplosionParticleSystem explosion;
+
+        Texture2D starBackground;
+
+        double seconds = 0.0;
 
         public GameplayScreen()
         {
@@ -41,6 +47,8 @@ namespace SpaceArcade.Screens
             pauseAction = new InputAction(new[] { Buttons.Start, Buttons.Back }, new[] { Keys.Back, Keys.Escape }, true);
 
             spaceShip = new SpaceShip();
+
+            ResetTime();
         }
 
         public override void Activate()
@@ -72,6 +80,9 @@ namespace SpaceArcade.Screens
 
             bangers = content.Load<SpriteFont>("bangers");
             coinPickup = content.Load<SoundEffect>("Pickup_Coin15");
+            starBackground = content.Load<Texture2D>("star-background");
+
+            //explosion = new ExplosionParticleSystem( , 20);
 
             Thread.Sleep(1000);
 
@@ -95,7 +106,9 @@ namespace SpaceArcade.Screens
             if (coveredByOtherScreen) pauseAlpha = Math.Min(pauseAlpha + 1f / 32, 1);
             else pauseAlpha = Math.Max(pauseAlpha - 1f / 32, 0);
 
-            if(gameTime.TotalGameTime.TotalSeconds > 5 && !collisionOn)
+            seconds += gameTime.ElapsedGameTime.TotalSeconds;
+
+            if(seconds > 5.0 && !collisionOn)
             {
                 collisionOn = true;
             }
@@ -110,6 +123,7 @@ namespace SpaceArcade.Screens
                     
                     if (asteroid.Bounds.CollidesWith(spaceShip.Bounds) && collisionOn)
                     {
+                        //explosion.PlaceExplosion(spaceShip.Position);
                         ScreenManager.RemoveScreen(this);
                         ScreenManager.AddScreen(new BackgroundScreen(), null);
                         ScreenManager.AddScreen(new LoseScreen(), null);
@@ -150,12 +164,24 @@ namespace SpaceArcade.Screens
             var spriteBatch = ScreenManager.SpriteBatch;
             ScreenManager.GraphicsDevice.Clear(Color.DarkBlue);
 
+            float spaceShipX = MathHelper.Clamp(spaceShip.Position.X, 0, 5000);
+            float offsetX = -spaceShipX;
+            float spaceShipY = MathHelper.Clamp(spaceShip.Position.Y, 0, 2812);
+            float offsetY = -spaceShipY;
+
+            Matrix transform;
+
+            transform = Matrix.CreateTranslation(offsetX * 0.333f, offsetY * 0.333f, 0);
+            spriteBatch.Begin(transformMatrix: transform);
+            spriteBatch.Draw(starBackground, Vector2.Zero, Color.White);
+            spriteBatch.End();
+
             spriteBatch.Begin();
             foreach (var asteroid in asteroids) asteroid.Draw(gameTime, spriteBatch);
             foreach (var coin in coins) coin.Draw(gameTime, spriteBatch);
             spaceShip.Draw(gameTime, spriteBatch);
 
-            spriteBatch.DrawString(bangers, "Avoid the Asteroids!!!", new Vector2(0, 0), Color.White);
+            spriteBatch.DrawString(bangers, "Avoid the Asteroids!!!", Vector2.Zero, Color.White);
             spriteBatch.DrawString(bangers, $"Coins Left: {coinsLeft}", new Vector2(0, 50), Color.White);
             spriteBatch.End();
 
@@ -165,6 +191,11 @@ namespace SpaceArcade.Screens
 
                 ScreenManager.FadeBackBufferToBlack(alpha);
             }
+        }
+
+        private void ResetTime()
+        {
+            seconds = 0.0;
         }
     }
 }

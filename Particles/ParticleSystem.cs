@@ -122,11 +122,22 @@ namespace SpaceArcade.Particles
             base.Draw(gameTime);
         }
 
-        protected void AddParticles(Rectangle where)
+        protected void AddParticles(Vector2 where)
         {
             int numParticles = RandomHelper.Next(minNumParticles, maxNumParticles);
             
             for(int i = 0; i < numParticles && freeParticles.Count > 0; i++)
+            {
+                int index = freeParticles.Dequeue();
+                InitializeParticle(ref particles[index], where);
+            }
+        }
+
+        protected void AddParticles(Rectangle where)
+        {
+            int numParticles = RandomHelper.Next(minNumParticles, maxNumParticles);
+
+            for (int i = 0; i < numParticles && freeParticles.Count > 0; i++)
             {
                 int index = freeParticles.Dequeue();
                 InitializeParticle(ref particles[index], RandomHelper.RandomPosition(where));
