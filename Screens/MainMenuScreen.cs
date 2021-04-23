@@ -12,14 +12,17 @@ namespace SpaceArcade.Screens
         {
             var playGameMenuEntry = new MenuEntry("Play Space Arcade");
             var optionsMenuEntry = new MenuEntry("Options");
+            var instructionsMenuEntry = new MenuEntry("Instructions");
             var exitMenuEntry = new MenuEntry("Exit");
 
             playGameMenuEntry.Selected += PlayGameMenuEntrySelected;
             optionsMenuEntry.Selected += OptionsMenuEntrySelected;
+            instructionsMenuEntry.Selected += InstructionsMenuEntrySelected;
             exitMenuEntry.Selected += OnCancel;
 
             MenuEntries.Add(playGameMenuEntry);
             MenuEntries.Add(optionsMenuEntry);
+            MenuEntries.Add(instructionsMenuEntry);
             MenuEntries.Add(exitMenuEntry);
         }
 
@@ -31,6 +34,11 @@ namespace SpaceArcade.Screens
         private void OptionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
         {
             ScreenManager.AddScreen(new OptionsMenuScreen(), e.PlayerIndex);
+        }
+
+        private void InstructionsMenuEntrySelected(object sender, PlayerIndexEventArgs e)
+        {
+            ScreenManager.AddScreen(new InstructionsScreen(), e.PlayerIndex);
         }
 
         protected override void OnCancel(PlayerIndex playerIndex)
